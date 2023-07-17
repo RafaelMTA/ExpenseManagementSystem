@@ -70,6 +70,10 @@
                     android:id="@+id/calendarFragment"
                     android:icon="@drawable/baseline_calendar_month_24"
                     />
+                <item android:title="@string/menu_support_7"
+                    android:id="@+id/socialnetworkFragment"
+                    android:icon="@drawable/baseline_person_4_24"
+                    />
             </menu>
         </item>
     </group>

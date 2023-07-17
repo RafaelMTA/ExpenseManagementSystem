@@ -1,6 +1,5 @@
 package Webview
 
-import Fragments.WebViewFragment
 import android.content.Intent
 import android.net.Uri
 import android.net.http.SslError
@@ -8,8 +7,9 @@ import android.webkit.SslErrorHandler
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.fragment.app.FragmentActivity
 
-class Webview(activity: WebViewFragment) : WebViewClient() {
+class Webview(activity: FragmentActivity) : WebViewClient() {
     private val activity = activity
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {

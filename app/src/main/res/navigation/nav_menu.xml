@@ -70,4 +70,9 @@
         android:name="Fragments.CalendarFragment"
         android:label="fragment_calendar"
         tools:layout="@layout/fragment_calendar" />
+    <fragment
+        android:id="@+id/socialnetworkFragment"
+        android:name="Fragments.SocialNetworkFragment"
+        android:label="fragment_socialnetwork"
+        tools:layout="@layout/fragment_social_network" />
 </navigation>
