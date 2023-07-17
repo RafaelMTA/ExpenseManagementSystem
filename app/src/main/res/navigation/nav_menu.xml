@@ -65,4 +65,9 @@
         android:name="Fragments.VideoFragment"
         android:label="fragment_video"
         tools:layout="@layout/fragment_video" />
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="Fragments.CalendarFragment"
+        android:label="fragment_calendar"
+        tools:layout="@layout/fragment_calendar" />
 </navigation>

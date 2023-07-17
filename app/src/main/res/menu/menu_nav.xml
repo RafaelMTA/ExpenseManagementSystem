@@ -66,6 +66,10 @@
                     android:id="@+id/videoFragment"
                     android:icon="@drawable/baseline_video_file_24"
                     />
+                <item android:title="@string/menu_support_6"
+                    android:id="@+id/calendarFragment"
+                    android:icon="@drawable/baseline_calendar_month_24"
+                    />
             </menu>
         </item>
     </group>
