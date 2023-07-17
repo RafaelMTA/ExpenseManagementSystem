@@ -62,6 +62,10 @@
                     android:id="@+id/webviewFragment"
                     android:icon="@drawable/baseline_pageview_24"
                     />
+                <item android:title="@string/menu_support_5"
+                    android:id="@+id/videoFragment"
+                    android:icon="@drawable/baseline_video_file_24"
+                    />
             </menu>
         </item>
     </group>
