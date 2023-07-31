@@ -6,7 +6,9 @@
 
     <color name="transparent">#00000000</color>
 
-    <color name="colorPrimary">#00000000</color>
-    <color name="colorPrimaryDark">#00000000</color>
-    <color name="colorAccent">#00000000</color>
+    <color name="colorPrimary">#ED2173</color>
+    <color name="colorPrimaryDark">#222934</color>
+    <color name="colorAccent">#ED2173</color>
+
+
 </resources>

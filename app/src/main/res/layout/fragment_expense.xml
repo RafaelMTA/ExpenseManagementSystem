@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Fragments.ExpenseFragment">
+    tools:context="Fragments.BudgetFragment">
 
     <GridLayout
         android:layout_width="match_parent"
@@ -35,11 +35,9 @@
                 android:textSize="20sp" />
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/list_view"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:dividerHeight="1dp"
-            android:padding="10dp"></ListView>
+            android:layout_height="match_parent" />
     </GridLayout>
 </FrameLayout>

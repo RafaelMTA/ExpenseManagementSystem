@@ -3,14 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Fragments.CategoryFragment">
+    tools:context="Fragments.BudgetFragment">
 
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnCount="1"
-        android:rowCount="2"
-        >
+        android:rowCount="2">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -33,15 +32,15 @@
                 android:layout_centerInParent="true"
                 android:gravity="center"
                 android:text="@string/menu_nav_1"
-                android:textSize="20sp"
-
-                />
+                android:textSize="20sp" />
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/list_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:dividerHeight="1dp"></ListView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:scrollbars="vertical"
+                />
     </GridLayout>
 </FrameLayout>

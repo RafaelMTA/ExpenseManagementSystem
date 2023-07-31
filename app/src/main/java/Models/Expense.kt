@@ -1,14 +1,15 @@
 package Models
 
-class Expense(title: String, cost: Double, category_id: Int, id: Int) {
+/*
+class Expense(title: String, cost: Double, category_id: String, id: String) {
     companion object{
         val NOTE_EDIT_EXTRA = "noteEdit"
     }
 
-    var id: Int = 0
+    var id: String = ""
     var title: String = ""
     var cost: Double = 0.00
-    var category_id: Int = 0
+    var category_id: String = ""
 
     init{
         this.id = id
@@ -16,4 +17,6 @@ class Expense(title: String, cost: Double, category_id: Int, id: Int) {
         this.cost = cost
         this.category_id = category_id
     }
-}
+}*/
+
+data class Expense(val id: String, val title: String, val cost: Double, val categoryId: String)

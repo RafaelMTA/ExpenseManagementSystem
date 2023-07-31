@@ -28,8 +28,8 @@
             android:gravity="center"
             />
 
-        <ImageView
-            android:id="@+id/logout_icon"
+        <ImageButton
+            android:id="@+id/logoutBtn"
             android:layout_width="75sp"
             android:layout_height="75sp"
             android:src="@drawable/baseline_logout_24"

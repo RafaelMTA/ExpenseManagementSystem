@@ -1,7 +1,8 @@
 package Models
 
-class Category(title: String, description: String, id: Int){
-    var id: Int = 0
+/*
+class Category(title: String, description: String, id: String){
+    var id: String = ""
     var title: String = ""
     var description: String = ""
 
@@ -14,4 +15,8 @@ class Category(title: String, description: String, id: Int){
     override fun toString(): String {
         return this.title
     }
+}*/
+
+data class Category(val id: String, val title: String, val description: String){
+    constructor() : this("","", "")
 }

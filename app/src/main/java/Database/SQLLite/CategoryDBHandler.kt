@@ -1,5 +1,6 @@
-package Database
+package Database.SQLLite
 
+import CustomErrors.CustomException
 import Models.Category
 import android.annotation.SuppressLint
 import android.content.ContentValues
@@ -23,7 +24,9 @@ class CategoryDBHandler(context: Context, name: String?, factory: SQLiteDatabase
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_CATEGORY")
+        if(newVersion > 1){
+            db.execSQL("DROP TABLE IF EXISTS $TABLE_CATEGORY")
+        }
 
         onCreate(db)
     }
@@ -42,8 +45,13 @@ class CategoryDBHandler(context: Context, name: String?, factory: SQLiteDatabase
 
         val db = this.writableDatabase
 
-        db.insert(TABLE_CATEGORY, null, values)
-        db.close()
+        try{
+            db.insert(TABLE_CATEGORY, null, values)
+
+            db.close()
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item creation: ${e.message}")
+        }
     }
 
     @SuppressLint("Range")
@@ -61,18 +69,24 @@ class CategoryDBHandler(context: Context, name: String?, factory: SQLiteDatabase
 
         var title: String
         var description: String
-        var id: Int
+        //var id: Int
+        var id: String
 
-        if (cursor!!.moveToFirst()) {
-            while (!cursor.isAfterLast) {
-                title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE))
-                description = cursor.getString(cursor.getColumnIndex(COLUMN_DESC))
-                id = cursor.getString(cursor.getColumnIndex(COLUMN_ID)).toInt()
-
-                categories.add(Category(title, description, id))
-                cursor.moveToNext()
+        try{
+            if (cursor!!.moveToFirst()) {
+                while (!cursor.isAfterLast) {
+                    title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE))
+                    description = cursor.getString(cursor.getColumnIndex(COLUMN_DESC))
+                    //id = cursor.getString(cursor.getColumnIndex(COLUMN_ID)).toInt()
+                    id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
+                    categories.add(Category(title, description, id))
+                    cursor.moveToNext()
+                }
             }
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item reading: ${e.message}")
         }
+
         return categories
     }
 
@@ -91,18 +105,24 @@ class CategoryDBHandler(context: Context, name: String?, factory: SQLiteDatabase
 
         var title: String
         var description: String
-        var id: Int
+        //var id: Int
+        var id: String
 
-        if (cursor!!.moveToFirst()) {
-            while (!cursor.isAfterLast) {
-                title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE))
-                description = cursor.getString(cursor.getColumnIndex(COLUMN_DESC))
-                id = cursor.getString(cursor.getColumnIndex(COLUMN_ID)).toInt()
-
-                categories.add(Category(title, description, id))
-                cursor.moveToNext()
+        try{
+            if (cursor!!.moveToFirst()) {
+                while (!cursor.isAfterLast) {
+                    title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE))
+                    description = cursor.getString(cursor.getColumnIndex(COLUMN_DESC))
+                    //id = cursor.getString(cursor.getColumnIndex(COLUMN_ID)).toInt()
+                    id = cursor.getString(cursor.getColumnIndex(COLUMN_ID))
+                    categories.add(Category(title, description, id))
+                    cursor.moveToNext()
+                }
             }
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item reading: ${e.message}")
         }
+
         return categories
     }
 
@@ -116,11 +136,15 @@ class CategoryDBHandler(context: Context, name: String?, factory: SQLiteDatabase
 
         val selection = COLUMN_ID + " LIKE ?"
         val selectionArgs = arrayOf(id)
-        val count = db.update(
-            TABLE_CATEGORY,
-            values,
-            selection,
-            selectionArgs)
+        try{
+            val count = db.update(
+                TABLE_CATEGORY,
+                values,
+                selection,
+                selectionArgs)
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item update: ${e.message}")
+        }
     }
 
     fun delete(id: String){
@@ -130,6 +154,10 @@ class CategoryDBHandler(context: Context, name: String?, factory: SQLiteDatabase
 
         val selectionArgs = arrayOf(id)
 
-        db.delete(TABLE_CATEGORY, selection, selectionArgs)
+        try{
+            db.delete(TABLE_CATEGORY, selection, selectionArgs)
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item deletion: ${e.message}")
+        }
     }
 }

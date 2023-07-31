@@ -1,11 +1,11 @@
 package Models
 
-class Budget(title: String, description: String, budget: Double, category_id: Int, id: Int) {
-    var id: Int = 0
+/*class Budget(title: String, description: String, budget: Double, category_id: String, id: String) {
+    var id: String = ""
     var title: String = ""
     var description: String = ""
     var budget: Double = 0.00
-    var category_id: Int = 0
+    var category_id: String = ""
 
     init{
         this.id = id
@@ -14,4 +14,6 @@ class Budget(title: String, description: String, budget: Double, category_id: In
         this.budget = budget
         this.category_id = category_id
     }
-}
+}*/
+
+data class Budget(val id: String, val title: String, val description: String, val value: Double, val categoryId: String)

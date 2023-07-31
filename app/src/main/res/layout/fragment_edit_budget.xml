@@ -50,8 +50,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/budget"
-            android:hint="budget"
+            android:id="@+id/value"
+            android:hint="value"
             android:inputType="numberDecimal"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -64,7 +64,7 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/category"
+            android:id="@+id/spinner"
             android:hint="category"
             />
     </com.google.android.material.textfield.TextInputLayout>

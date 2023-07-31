@@ -1,4 +1,4 @@
-package Database
+package Database.SQLLite
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -49,6 +49,7 @@ class DatabaseHelper(context: Context, name: String?, factory: SQLiteDatabase.Cu
         db.execSQL("DROP TABLE IF EXISTS $TABLE_BUDGET")
 
         db.execSQL("DROP TABLE IF EXISTS $TABLE_EXPENSE")
+
         onCreate(db)
     }
 }

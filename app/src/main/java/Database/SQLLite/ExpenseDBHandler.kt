@@ -1,6 +1,6 @@
-package Database
+package Database.SQLLite
 
-import Models.Budget
+import CustomErrors.CustomException
 import Models.Expense
 import android.annotation.SuppressLint
 import android.content.ContentValues
@@ -14,7 +14,8 @@ class ExpenseDBHandler(context: Context, name: String?, factory: SQLiteDatabase.
     private val TABLE_EXPENSE = "EXPENSES"
     private val TABLE_CATEGORY = "CATEGORIES"
 
-    private val CREATE_EXPENSE = ("CREATE TABLE IF NOT EXISTS " + TABLE_EXPENSE
+    private val CREATE_EXPENSE = (
+            "CREATE TABLE IF NOT EXISTS " + TABLE_EXPENSE
             + "(_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "TITLE TEXT UNIQUE NOT NULL, "
             + "COST DECIMAL(10,2),"
@@ -47,13 +48,17 @@ class ExpenseDBHandler(context: Context, name: String?, factory: SQLiteDatabase.
         val values = ContentValues().apply {
             put(COLUMN_TITLE, expense.title)
             put(COLUMN_COST, expense.cost)
-            put(COLUMN_CATEGORY_ID, expense.category_id)
+            put(COLUMN_CATEGORY_ID, expense.categoryId)
         }
 
         val db = this.writableDatabase
 
-        db.insert(TABLE_EXPENSE, null, values)
-        db.close()
+        try{
+            db.insert(TABLE_EXPENSE, null, values)
+            db.close()
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item creation: ${e.message}")
+        }
     }
 
     @SuppressLint("Range")
@@ -62,29 +67,35 @@ class ExpenseDBHandler(context: Context, name: String?, factory: SQLiteDatabase.
         val db = this.writableDatabase
         var cursor: Cursor? = null
         try {
-            cursor = db.rawQuery("SELECT * FROM $TABLE_EXPENSE WHERE ${COLUMN_ID}='$id'", null)
+            cursor = db.rawQuery("SELECT * FROM $TABLE_EXPENSE WHERE $COLUMN_ID='$id'", null)
         } catch (e: SQLiteException) {
             // if table not yet present, create it
             db.execSQL(CREATE_EXPENSE)
             return ArrayList()
         }
 
-        var id: Int
+        //var id: Int
+        var id: String
         var title: String
         var cost: Double
-        var category_id: Int
+        //var category_id: Int
+        var category_id: String
+        try{
+            if (cursor!!.moveToFirst()) {
+                while (!cursor.isAfterLast) {
+                    id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID)).toString()
+                    title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE))
+                    cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST))
+                    category_id = cursor.getInt(cursor.getColumnIndex(COLUMN_CATEGORY_ID)).toString()
 
-        if (cursor!!.moveToFirst()) {
-            while (!cursor.isAfterLast) {
-                id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID))
-                title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE))
-                cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST))
-                category_id = cursor.getInt(cursor.getColumnIndex(COLUMN_CATEGORY_ID))
-
-                expenses.add(Expense(title, cost, category_id, id))
-                cursor.moveToNext()
+                    expenses.add(Expense(id, title, cost, category_id))
+                    cursor.moveToNext()
+                }
             }
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item reading: ${e.message}")
         }
+
         return expenses
     }
 
@@ -101,22 +112,29 @@ class ExpenseDBHandler(context: Context, name: String?, factory: SQLiteDatabase.
             return ArrayList()
         }
 
-        var id: Int
+        //var id: Int
+        var id: String
         var title: String
         var cost: Double
-        var category_id: Int
+        //var category_id: Int
+        var category_id: String
 
-        if (cursor!!.moveToFirst()) {
-            while (!cursor.isAfterLast) {
-                id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID))
-                title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE))
-                cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST))
-                category_id = cursor.getInt(cursor.getColumnIndex(COLUMN_CATEGORY_ID))
+        try{
+            if (cursor!!.moveToFirst()) {
+                while (!cursor.isAfterLast) {
+                    id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID)).toString()
+                    title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE))
+                    cost = cursor.getDouble(cursor.getColumnIndex(COLUMN_COST))
+                    category_id = cursor.getInt(cursor.getColumnIndex(COLUMN_CATEGORY_ID)).toString()
 
-                expenses.add(Expense(title, cost, category_id, id))
-                cursor.moveToNext()
+                    expenses.add(Expense(id, title, cost, category_id))
+                    cursor.moveToNext()
+                }
             }
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item reading: ${e.message}")
         }
+
         return expenses
     }
 
@@ -126,16 +144,21 @@ class ExpenseDBHandler(context: Context, name: String?, factory: SQLiteDatabase.
         val values = ContentValues().apply {
             put(COLUMN_TITLE, expense.title)
             put(COLUMN_COST, expense.cost)
-            put(COLUMN_CATEGORY_ID, expense.category_id)
+            put(COLUMN_CATEGORY_ID, expense.categoryId)
         }
 
         val selection = COLUMN_ID + " LIKE ?"
         val selectionArgs = arrayOf(id)
-        val count = db.update(
-            TABLE_EXPENSE,
-            values,
-            selection,
-            selectionArgs)
+
+        try{
+            val count = db.update(
+                TABLE_EXPENSE,
+                values,
+                selection,
+                selectionArgs)
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item update: ${e.message}")
+        }
     }
 
     fun delete(id: String){
@@ -145,11 +168,15 @@ class ExpenseDBHandler(context: Context, name: String?, factory: SQLiteDatabase.
 
         val selectionArgs = arrayOf(id)
 
-        db.delete(TABLE_EXPENSE, selection, selectionArgs)
+        try{
+            db.delete(TABLE_EXPENSE, selection, selectionArgs)
+        }catch (e: SQLiteException){
+            throw CustomException("Error on item deletion: ${e.message}")
+        }
     }
 
     @SuppressLint("Range")
-    fun getTotalCost(categoryId: Int): Double {
+    fun getTotalCost(categoryId: String): Double {
         val db = this.writableDatabase
 
         var cursor = db.rawQuery("SELECT SUM(COST) AS TOTAL FROM EXPENSES WHERE CATEGORY_ID = $categoryId", null)
@@ -165,8 +192,25 @@ class ExpenseDBHandler(context: Context, name: String?, factory: SQLiteDatabase.
         return total
     }
 
-    @SuppressLint("Range")
+   /* @SuppressLint("Range")
     fun getTotalCostOnUpdate(categoryId: Int, expenseId: Int): Double {
+        val db = this.writableDatabase
+
+        var cursor = db.rawQuery("SELECT SUM(COST) AS TOTAL FROM EXPENSES WHERE CATEGORY_ID = $categoryId AND _ID != $expenseId", null)
+
+        var total = 0.0
+
+        if (cursor!!.moveToFirst()) {
+            while (!cursor.isAfterLast) {
+                total += cursor.getDouble(0)
+                cursor.moveToNext()
+            }
+        }
+        return total
+    }*/
+
+    @SuppressLint("Range")
+    fun getTotalCostOnUpdate(categoryId: String, expenseId: String): Double {
         val db = this.writableDatabase
 
         var cursor = db.rawQuery("SELECT SUM(COST) AS TOTAL FROM EXPENSES WHERE CATEGORY_ID = $categoryId AND _ID != $expenseId", null)

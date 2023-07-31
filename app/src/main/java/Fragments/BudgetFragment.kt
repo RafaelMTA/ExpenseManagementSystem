@@ -1,11 +1,17 @@
 package Fragments
 
+import Adapters.BudgetAdapter
+import Adapters.CategoryAdapter
 import BottomSheet.AddBudgetFragment
-import BottomSheet.AddExpenseFragment
+import BottomSheet.AddCategoryFragment
 import BottomSheet.EditBudgetFragment
-import Database.BudgetDBHandler
-import Database.CategoryDBHandler
+import BottomSheet.EditCategoryFragment
+import Database.ApiService.BudgetService
+import Database.ApiService.CategoryService
+import Database.SQLLite.BudgetDBHandler
+import Database.SQLLite.CategoryDBHandler
 import Models.Budget
+import Models.Category
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,19 +22,33 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.expensemanagementsystem.R
 import com.example.expensemanagementsystem.databinding.FragmentBudgetBinding
-import com.example.expensemanagementsystem.databinding.FragmentExpenseBinding
-import com.example.expensemanagementsystem.databinding.FragmentSupportBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.firestore.FirebaseFirestore
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-class BudgetFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class BudgetFragment : Fragment() {
     private lateinit var binding : FragmentBudgetBinding
     private lateinit var budgetDBHandler : BudgetDBHandler
     private lateinit var categoryDBHandler: CategoryDBHandler
-    private lateinit var arrayList : ArrayList<Budget>
+
+    private val itemList = ArrayList<Budget>()
+    private val categoryList = ArrayList<Category>()
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: BudgetAdapter
+
+    private val db = FirebaseFirestore.getInstance()
+    private val collectionRef = db.collection("Budgets")
+    private val categoriesRef = db.collection("Categories")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,14 +60,7 @@ class BudgetFragment : Fragment(), AdapterView.OnItemSelectedListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val fab = requireActivity().findViewById<FloatingActionButton>(R.id.fab)
-        fab.isVisible = true
-
-        fab.setOnClickListener(null)
-
-        fab.setOnClickListener{
-            AddBudgetFragment().show(requireActivity().supportFragmentManager, "addBudgetTag")
-        }
+        initiateFab()
 
         binding = FragmentBudgetBinding.inflate(inflater, container, false)
 
@@ -55,45 +68,7 @@ class BudgetFragment : Fragment(), AdapterView.OnItemSelectedListener {
             requireActivity().onBackPressed()
         }
 
-        //Load list
-        arrayList = budgetDBHandler.readAll()
-
-        if(arrayList.isEmpty()){
-            Toast.makeText(requireActivity(), "No entries found", Toast.LENGTH_LONG).show()
-        }else{
-            val listAdapter = ArrayAdapter(requireActivity(), R.layout.budget_item, R.id.budget_item_title, arrayList.map {"Title: " + it.title + " | $:" + it.budget + " - " + getCategoryName(it.category_id.toString())})
-
-            binding.budgetListView.adapter = listAdapter
-            binding.budgetListView.onItemSelectedListener = this
-
-            //Edit item from list
-            binding.budgetListView.onItemClickListener =
-                AdapterView.OnItemClickListener { parent, view, position, id ->
-                    var bundle = Bundle()
-                    bundle.putInt("id", arrayList[position].id)
-                    bundle.putString("title", arrayList[position].title)
-                    bundle.putString("description", arrayList[position].description)
-                    bundle.putDouble("budget", arrayList[position].budget)
-                    bundle.putInt("categoryId", arrayList[position].category_id)
-
-                    val frg = EditBudgetFragment()
-                    frg.arguments = bundle
-                    frg.show(requireActivity().supportFragmentManager, "editBudgetTag")
-
-                    listAdapter.notifyDataSetChanged()
-                    true
-                }
-
-            //Remove item from list
-            binding.budgetListView.onItemLongClickListener =
-                AdapterView.OnItemLongClickListener { _, _, i, _ ->
-                    arrayList[i].id?.let { onLongClick(requireActivity(), this, i, it) }
-                    arrayList.removeAt(i)
-                    listAdapter.notifyDataSetChanged()
-
-                    true
-                }
-        }
+        getCategories()
 
         // Inflate the layout for this fragment
         return binding.root
@@ -104,25 +79,134 @@ class BudgetFragment : Fragment(), AdapterView.OnItemSelectedListener {
         super.onDestroy()
     }
 
-    private fun onLongClick(parent: FragmentActivity, view: BudgetFragment, position: Int, id: Int){
-        budgetDBHandler.delete(id.toString())
-        Toast.makeText(requireActivity(), "Successfully deleted", Toast.LENGTH_LONG).show()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initiateRecyclerView()
+
+        GetAll()
     }
 
-    private fun displayData(budget: Budget){
-        Toast.makeText(requireActivity(),  budget.title, Toast.LENGTH_LONG).show()
+    private fun initiateFab(){
+        val fab = requireActivity().findViewById<FloatingActionButton>(R.id.fab)
+
+        fab.isVisible = true
+
+        fab.setOnClickListener(null)
+
+        fab.setOnClickListener{
+            AddBudgetFragment().show(requireActivity().supportFragmentManager, "addBudgetTag")
+        }
     }
 
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        val budget = parent?.selectedItem
-        displayData(budget as Budget)
+    private fun initiateRecyclerView(){
+        recyclerView = binding.recyclerView
+        adapter = BudgetAdapter(itemList)
+
+        adapter.clickEvents =
+            object : BudgetAdapter.ClickEvents{
+                override fun onItemClickEvent(item: Budget) {
+                    editItems(item)
+                }
+
+                override fun onItemLongClickEvent(item: Budget) {
+                    Delete(item.id)
+                }
+            }
+
+        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        recyclerView.adapter = adapter
+
+        val divideDecorator = DividerItemDecoration(recyclerView.context, 1)
+        recyclerView.addItemDecoration(divideDecorator)
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-        TODO("Not yet implemented")
+    private fun editItems(item: Budget){
+        var bundle = Bundle()
+
+        bundle.putString("id", item.id)
+        bundle.putString("title", item.title)
+        bundle.putString("description", item.description)
+        bundle.putString("value", item.value.toString())
+        bundle.putString("categoryId", item.categoryId)
+
+        val frg = EditBudgetFragment()
+        frg.arguments = bundle
+        frg.show(requireActivity().supportFragmentManager, "editBudgetTag")
+
+        adapter.notifyDataSetChanged()
+        true
     }
 
-    private fun getCategoryName(id: String) : String {
-        return categoryDBHandler.read(id)[0].title
+    private fun GetAll(){
+        initiateRecyclerView()
+
+        collectionRef
+            .get()
+            .addOnSuccessListener { result ->
+                itemList.clear()
+
+                for (document in result) {
+                    val id = document.id
+                    val title = document.getString("title") ?: ""
+                    val description = document.getString("description") ?: ""
+                    val value = document.getDouble("value") ?: 0.0
+                    val categoryId = document.getString("categoryId") ?: ""
+                    val budget = Budget(id, title, description, value, getCategoryName(categoryId))
+
+                    itemList.add(budget)
+                }
+
+                adapter.notifyDataSetChanged()
+                return@addOnSuccessListener
+            }
+            .addOnFailureListener { exception ->
+                var items = budgetDBHandler.readAll()
+
+                itemList.clear()
+                itemList.addAll(items)
+                return@addOnFailureListener
+            }
+    }
+
+    private fun Delete(id: String){
+        val documentRef = collectionRef.document(id)
+        documentRef.delete()
+            .addOnSuccessListener{
+                //Delete on localDB
+                budgetDBHandler.delete(id)
+                Toast.makeText(requireActivity(), "Delete Successfully", Toast.LENGTH_LONG).show()
+                return@addOnSuccessListener
+            }
+            .addOnFailureListener { exception ->
+                // An error occurred while deleting the document
+                Toast.makeText(requireActivity(), "Failed to delete item", Toast.LENGTH_LONG).show()
+                return@addOnFailureListener
+            }
+    }
+
+    private fun getCategories() {
+        categoriesRef.get()
+            .addOnSuccessListener {result ->
+                categoryList.clear()
+                for(document in result){
+                    val id = document.id
+                    val title = document.getString("title") ?: ""
+                    val description = document.getString("description") ?: ""
+                    val category = Category(id, title, description)
+                    categoryList.add(category)
+                }
+                return@addOnSuccessListener
+            }
+            .addOnFailureListener{
+                return@addOnFailureListener
+            }
+    }
+
+    private fun getCategoryName(id: String) : String{
+        for(item in categoryList){
+            if(item.id == id) return item.title
+        }
+        return ""
     }
 }
