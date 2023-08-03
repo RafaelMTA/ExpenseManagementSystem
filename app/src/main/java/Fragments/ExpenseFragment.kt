@@ -1,17 +1,10 @@
 package Fragments
 
-import Adapters.BudgetAdapter
 import Adapters.ExpenseAdapter
-import BottomSheet.AddCategoryFragment
 import BottomSheet.AddExpenseFragment
-import BottomSheet.EditCategoryFragment
 import BottomSheet.EditExpenseFragment
-import Database.ApiService.BudgetService
-import Database.ApiService.CategoryService
-import Database.ApiService.ExpenseService
 import Database.SQLLite.CategoryDBHandler
 import Database.SQLLite.ExpenseDBHandler
-import Models.Budget
 import Models.Category
 import Models.Expense
 import android.os.Bundle
@@ -19,11 +12,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,11 +21,6 @@ import com.example.expensemanagementsystem.databinding.FragmentExpenseBinding
 import com.example.expensemanagementsystem.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class ExpenseFragment : Fragment() {
     private lateinit var binding : FragmentExpenseBinding
@@ -70,14 +55,14 @@ class ExpenseFragment : Fragment() {
             requireActivity().onBackPressed()
         }
 
+        getCategories()
+
         // Inflate the layout for this fragment
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        getCategories()
 
         initiateRecyclerView()
 

@@ -74,6 +74,10 @@
                     android:id="@+id/socialnetworkFragment"
                     android:icon="@drawable/baseline_person_4_24"
                     />
+                <item android:title="@string/menu_support_8"
+                    android:id="@+id/rssFragment"
+                    android:icon="@drawable/baseline_rss_feed_24"
+                    />
             </menu>
         </item>
     </group>

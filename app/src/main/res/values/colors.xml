@@ -2,7 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="red">#Df4429</color>
+
+    <color name="C1">#E9DD4B4B</color>
+    <color name="C2">#E6494B</color>
+    <color name="C3">#E65E62</color>
+    <color name="C4">#E17A81</color>
+    <color name="C5">#E2F0CACC</color>
 
     <color name="transparent">#00000000</color>
 
@@ -10,5 +15,5 @@
     <color name="colorPrimaryDark">#222934</color>
     <color name="colorAccent">#ED2173</color>
 
-
+    <color name="app_backgroundcolor">#e8485a</color>
 </resources>

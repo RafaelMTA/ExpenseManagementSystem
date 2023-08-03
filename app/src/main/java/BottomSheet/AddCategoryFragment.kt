@@ -1,6 +1,5 @@
 package BottomSheet
 
-import Database.ApiService.CategoryService
 import Database.SQLLite.CategoryDBHandler
 import Models.Category
 import android.database.sqlite.SQLiteException
@@ -12,11 +11,6 @@ import android.widget.Toast
 import com.example.expensemanagementsystem.databinding.FragmentAddCategoryBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.firestore.FirebaseFirestore
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class AddCategoryFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentAddCategoryBinding

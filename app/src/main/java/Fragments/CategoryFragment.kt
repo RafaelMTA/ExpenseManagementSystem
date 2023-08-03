@@ -3,8 +3,6 @@ package Fragments
 import Adapters.CategoryAdapter
 import BottomSheet.AddCategoryFragment
 import BottomSheet.EditCategoryFragment
-import Database.Firestore.FirestoreHandler
-import Database.Firestore.FirestoreManager
 import Database.SQLLite.CategoryDBHandler
 import Models.Category
 import android.os.Bundle
@@ -19,11 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensemanagementsystem.R
 import com.example.expensemanagementsystem.databinding.FragmentCategoryBinding
-import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 
 
 class CategoryFragment : Fragment() {

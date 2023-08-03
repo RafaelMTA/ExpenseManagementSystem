@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import com.example.expensemanagementsystem.R
 import com.example.expensemanagementsystem.databinding.FragmentHomeBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -51,6 +52,10 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         nav = requireActivity().findNavController(R.id.mainContainer)
+
+        val user = FirebaseAuth.getInstance().currentUser
+
+        binding.username.text = user?.displayName ?: ""
     }
 
     private fun replaceFragment(view: Int)

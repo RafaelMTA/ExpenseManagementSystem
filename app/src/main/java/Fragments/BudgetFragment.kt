@@ -5,9 +5,6 @@ import Adapters.CategoryAdapter
 import BottomSheet.AddBudgetFragment
 import BottomSheet.AddCategoryFragment
 import BottomSheet.EditBudgetFragment
-import BottomSheet.EditCategoryFragment
-import Database.ApiService.BudgetService
-import Database.ApiService.CategoryService
 import Database.SQLLite.BudgetDBHandler
 import Database.SQLLite.CategoryDBHandler
 import Models.Budget
@@ -17,11 +14,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,11 +23,6 @@ import com.example.expensemanagementsystem.R
 import com.example.expensemanagementsystem.databinding.FragmentBudgetBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class BudgetFragment : Fragment() {
     private lateinit var binding : FragmentBudgetBinding

@@ -75,4 +75,9 @@
         android:name="Fragments.SocialNetworkFragment"
         android:label="fragment_socialnetwork"
         tools:layout="@layout/fragment_social_network" />
+    <fragment
+        android:id="@+id/rssFragment"
+        android:name="Fragments.RssFragment"
+        android:label="fragment_rss"
+        tools:layout="@layout/fragment_r_s_s" />
 </navigation>
