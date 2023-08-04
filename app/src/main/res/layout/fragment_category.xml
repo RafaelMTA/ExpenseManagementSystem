@@ -5,55 +5,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Fragments.BudgetFragment">
+    tools:context="Fragments.CategoryFragment">
 
     <LinearLayout
-        android:id="@+id/topMenu"
-        android:layout_width="match_parent"
+        android:id="@+id/container"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:background="@color/white"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/recycleContainer"
+        android:gravity="center"
         >
+            <ImageButton
+                android:id="@+id/back"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:adjustViewBounds="true"
+                android:background="@color/transparent"
+                android:src="@drawable/baseline_arrow_back_24"
+                />
 
-        <ImageButton
-            android:id="@+id/back"
-            android:layout_width="90sp"
-            android:layout_height="90sp"
-            android:adjustViewBounds="true"
-            android:background="@color/transparent"
-            android:src="@drawable/baseline_arrow_back_24"
-            />
-
-        <TextView
-            android:id="@+id/empty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:text="@string/menu_nav_1"
-            android:textFontWeight="700"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+            <TextView
+                android:id="@+id/empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="132dp"
+                android:text="@string/menu_nav_1"
+                android:textColor="@color/black"
+                android:textFontWeight="700"
+                android:textSize="20sp"
+             />
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/recycleContainer"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/C5"
-        app:layout_constraintTop_toBottomOf="@+id/topMenu"
+        android:layout_marginTop="4dp"
+
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        >
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@id/container"
+        app:layout_constraintVertical_bias="0.0"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
